@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News List</title>
+    <style>
+        .dropdown-content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>News list</h1>
+
+    {% if request.user.is_authenticated %}
+        Welcome, {{ user.username }}!
+        <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'add_news' %}">Add news</a>
+    {% else %}
+        <a href="{%url 'login_user'%}">Login</a>
+    {% endif %}
+
+
+
+
+    <ul>
+        {% for news_item in news %}
+            <li>
+                <h3>{{ news_item.title }}</h3>
+                {% if news_item.image %}
+                    <img src="{{ news_item.image.url }}" alt="photo" width="200">
+                {% endif %}
+                <p>
+                    {% if news_item.text|length > 100 %}
+                        {{ news_item.text|safe|slice:":100" }}
+                        <a href="#{{ news_item.id }}" class="show-more">Show more</a>
+                        <span id="{{ news_item.id }}" class="dropdown-content">
+                            {{ news_item.text }}
+                        </span>
+                    {% else %}
+                        {{ news_item.text }}
+                    {% endif %}
+                </p>
+                <p>Author: <a href="{% url 'author_news' news_item.author.id %}">{{ news_item.author.username }}</a> </p>
+                <p>Date: {{ news_item.created_at }}</p>
+                {% if news_item.file %}
+                    <p>File: <a href="{{ news_item.file.url }}" target="_blank">{{ news_item.file.name }}</a></p>
+                    <a href="{{ news_item.file.url }}" download>Download file</a>
+                    <a href="{% url 'download_file' news_item.id %}">Download via django</a>
+                {% endif %}
+                <br>
+                {% if request.user == news_item.author %}
+                    <a href="{% url 'delete_news' news_item.id %}">Delete</a>
+                    <a href="{% url 'edit_news' news_item.id %}">Edit</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        var showMoreLinks = document.querySelectorAll('.show-more');
+        showMoreLinks.forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                var dropdown = link.nextElementSibling;
+                if (dropdown.style.display === 'none') {
+                    dropdown.style.display = 'block';
+                    link.innerText = 'Show less';
+                } else {
+                    dropdown.style.display = 'none';
+                    link.innerText = 'Show more';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

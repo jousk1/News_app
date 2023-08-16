@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{author.username}}'s news</title>
+</head>
+<body>
+  <h1>{{author.username}}'s news</h1>
+  <ul>
+    {% for news_item in news %}
+      <li>
+        <h3>{{news_item.title}}</h3>
+        <p>{{ news_item.text }}</p>
+        <p>{{ news_item.created_at }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
